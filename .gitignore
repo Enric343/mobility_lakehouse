@@ -1,0 +1,6 @@
+.venv/
+__pycache__/
+*.pyc
+# Raw and lakehouse data are reproducible from the download/ingestion scripts
+data/
+.tmp/
