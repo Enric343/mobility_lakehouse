@@ -1,6 +1,6 @@
 # Data Sources
 
-The data we use and what we use it for. Files are in `data/raw/` (not in git). `{level}` = `distritos`, `municipios` or `GAU`.
+Original downloads are organized by source in `data/raw/` (`mitma/`, `ine/`, and `boe/`). Git ignores `data/`, which also contains local databases. `{level}` = `distritos` (districts), `municipios` (municipalities) or `GAU` (Grandes Áreas Urbanas, large urban areas) — the three MITMA zoning levels, from finest to coarsest.
 
 Business questions: **BQ1** typical day, **BQ2** gravity model and infrastructure gaps, **BQ3** overnight stays.
 
@@ -37,10 +37,14 @@ Source: <https://movilidad-opendata.mitma.es/>
 
 ## How to get the data
 
-**MITMA, BOE and INE tables:** `python download_data.py [start] [end]`. Without dates it downloads the sample week, 2023-03-06 to 2023-03-12. The rest of 2023 is about 130 GB (estimated from the sample week): `python download_data.py 2023-01-01 2023-12-31`.
+**MITMA, BOE and INE tables.** Run `python scripts/download_data.py [start] [end]` from the repository root. It defaults to the sample week, 2023-03-06 to 2023-03-12. The full reference year takes about 130 GB (estimated from the sample week). Download it with `python scripts/download_data.py 2023-01-01 2023-12-31`.
 
 MITMA has no files for 7 days of 2023: 26, 27, 30 and 31 October and 1, 2 and 3 November. The script reports them as `MISSING` and carries on.
 
 The INE tables come with all their years. Silver filters to 2023, and the other years help explain the nulls.
 
-**Provinces and regions, by hand:** the list is only a web page, so copy its table to `data/raw/ine/ccaa_provincias.csv`, separated by `;`, with the columns `CODAUTO;Comunidad Autónoma;CPRO;Provincia`.
+**Provinces and regions.** The downloader extracts the official INE HTML table to
+`data/raw/ine/ccaa_provincias.csv` with `;` as the delimiter. It checks for 52 provinces
+and 19 autonomous communities and cities. An existing UTF-8 CSV with the columns
+`CODAUTO;Comunidad Autónoma;CPRO;Provincia` can also be used. Sprint 2 and the
+exploration notebook use this file.

@@ -1,0 +1,4 @@
+duckdb==1.5.6
+duckdb-core-ext-ducklake==1.5.6
+duckdb-core-ext-spatial==1.5.6
+pyshp>=2.3,<4

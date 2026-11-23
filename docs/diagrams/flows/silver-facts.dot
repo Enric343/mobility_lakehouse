@@ -1,0 +1,16 @@
+digraph facts {
+  graph [rankdir=TB, bgcolor="white", pad=0.25, nodesep=0.54, ranksep=0.42, fontname="Arial"];
+  node [shape=box, style="rounded,filled", color="#8ca5b5", fillcolor="#eef4f7", fontname="Arial", fontcolor="#173346", fontsize=13, margin="0.17,0.10"];
+  edge [color="#536e80", fontcolor="#405b6e", fontname="Arial", fontsize=10, arrowsize=0.7];
+  trips [label="bronze_mitma_od_daily\nDate, hour, OD, activities and traveller profile", fillcolor="#faecd9"];
+  nights [label="bronze_mitma_overnight_daily\nDate, residence district and overnight zone", fillcolor="#faecd9"];
+  silver_trips [label="silver_fact_trips\nTimestamp, OD and activity pair\nSum published trips across traveller profiles", fillcolor="#ddecf7"];
+  silver_nights [label="silver_fact_overnight\nTyped date and people\nKeep the source grain", fillcolor="#ddecf7"];
+  checks [label="Before commit\nValidate zone references and reconcile measure totals\nCommit both layers and record the input in mobility_loads", fillcolor="#e7f4ed"];
+  {rank=same; trips; nights;}
+  {rank=same; silver_trips; silver_nights;}
+  trips -> silver_trips [label="fact_trips.sql"];
+  nights -> silver_nights [label="fact_overnight.sql"];
+  silver_trips -> checks [label="Origin and destination use\nthe file zoning level"];
+  silver_nights -> checks [label="Residence uses distritos\nOvernight uses the file level"];
+}
