@@ -4,7 +4,7 @@
       <root>
         <mxCell id="0"/>
         <mxCell id="1" parent="0"/>
-        <mxCell id="band0" value="BRONZE — raw as-is (every column VARCHAR)" style="rounded=1;arcSize=2;whiteSpace=wrap;html=1;fillColor=#FFFBEA;strokeColor=#D6B656;dashed=1;verticalAlign=top;align=left;spacingLeft=12;spacingTop=8;fontStyle=1;fontSize=14;fontColor=#D6B656;" vertex="1" parent="1">
+        <mxCell id="band0" value="BRONZE — staged source data and load metadata" style="rounded=1;arcSize=2;whiteSpace=wrap;html=1;fillColor=#FFFBEA;strokeColor=#D6B656;dashed=1;verticalAlign=top;align=left;spacingLeft=12;spacingTop=8;fontStyle=1;fontSize=14;fontColor=#D6B656;" vertex="1" parent="1">
           <mxGeometry x="20" y="70" width="1280" height="230" as="geometry"/>
         </mxCell>
         <mxCell id="band1" value="SILVER — typed star schema (Kimball)" style="rounded=1;arcSize=2;whiteSpace=wrap;html=1;fillColor=#EEF4FD;strokeColor=#6C8EBF;dashed=1;verticalAlign=top;align=left;spacingLeft=12;spacingTop=8;fontStyle=1;fontSize=14;fontColor=#6C8EBF;" vertex="1" parent="1">
@@ -76,7 +76,7 @@
         <mxCell id="g_od" value="&lt;b&gt;gold_origin_demand&lt;/b&gt;&lt;br&gt;&lt;font style=&#x27;font-size:9px;color:#666&#x27;&gt;avg trips per origin&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#D5E8D4;strokeColor=#82B366;fontSize=11;verticalAlign=middle;align=center;" vertex="1" parent="1">
           <mxGeometry x="40" y="744" width="190" height="48" as="geometry"/>
         </mxCell>
-        <mxCell id="g_op" value="&lt;b&gt;gold_overnight_presence&lt;/b&gt;&lt;br&gt;&lt;font style=&#x27;font-size:9px;color:#666&#x27;&gt;BQ3 · net presence&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#D5E8D4;strokeColor=#82B366;fontSize=11;verticalAlign=middle;align=center;" vertex="1" parent="1">
+        <mxCell id="g_op" value="&lt;b&gt;gold_overnight_presence&lt;/b&gt;&lt;br&gt;&lt;font style=&#x27;font-size:9px;color:#666&#x27;&gt;BQ3 · Sprint 1 prototype&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#D5E8D4;strokeColor=#82B366;fontSize=11;verticalAlign=middle;align=center;" vertex="1" parent="1">
           <mxGeometry x="250" y="570" width="190" height="48" as="geometry"/>
         </mxCell>
         <mxCell id="g_ig" value="&lt;b&gt;gold_infrastructure_gaps&lt;/b&gt;&lt;br&gt;&lt;font style=&#x27;font-size:9px;color:#666&#x27;&gt;BQ2 · gravity pairs&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#D5E8D4;strokeColor=#82B366;fontSize=11;verticalAlign=middle;align=center;" vertex="1" parent="1">

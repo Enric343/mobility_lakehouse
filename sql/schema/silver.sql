@@ -1,3 +1,9 @@
+-- Column types. Categorical columns (zone_level, *_activity) and administrative
+-- codes (ccaa_code, province_code) stay VARCHAR by design. DuckLake rejects ENUM
+-- and silently drops VARCHAR(n) length, and codes keep leading zeros as text.
+-- Parquet already dictionary-encodes low-cardinality strings, so there is no
+-- storage to reclaim. See docs/decisions/004-silver-column-types.md.
+
 CREATE TABLE silver_dim_ccaa (
     ccaa_code VARCHAR PRIMARY KEY,
     ccaa VARCHAR NOT NULL

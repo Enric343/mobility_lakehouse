@@ -38,6 +38,7 @@ ENGINEERING PRINCIPLES:
 - Use `scripts/run_sprint2.py` for the local DuckLake load. Keep the Bronze and Silver steps in `scripts/lakehouse/` and their table definitions, transformations and checks under `sql/`.
 - Commit a daily mobility partition and its load record in the same DuckLake transaction. Use the load records to skip completed partitions on retries.
 - Keep the Sprint 3 DAG in `dags/`, Gold transformations in `sql/silver_to_gold/`, and plotting in `scripts/reporting/`. Use the original sample week for the DAG and report.
+- Require complete daily inputs for Sprint 3. Use `--allow-missing-days` explicitly for incremental ranges with documented gaps.
 - Never silently change table schemas, grains or business definitions.
 
 DATA QUALITY:

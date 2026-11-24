@@ -58,10 +58,10 @@ sql/
 └─ reporting/         ⑥ read-only views for the report
 ```
 
-The fact and daily-OD SQL receive their Bronze source table as the
-`$source_table` parameter from the loader, so one file serves every zoning level
-and date. The [Bronze to Silver rules](bronze-to-silver.md) explain each
-transformation in detail.
+The fact SQL reads a staged Bronze table through `$source_table`. The daily-OD
+SQL uses the same parameter to read Silver trips. Each query serves every
+zoning level and date. The [Bronze to Silver rules](bronze-to-silver.md)
+explain the fact transformations in detail.
 
 ## How it all fits together
 
@@ -104,7 +104,7 @@ check aborts before anything is committed.
 
 ═══ QUERY the lakehouse · read-only, no writes ═══
 
-  reporting/sprint3.py: open read-only  ──►  charts  ──►  HTML report
+  read one validated Gold snapshot  ──►  charts  ──►  HTML report
   ad-hoc SQL for inspection             (see the runbook)
 ```
 

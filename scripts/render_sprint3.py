@@ -7,7 +7,7 @@ from tempfile import TemporaryDirectory
 
 import duckdb
 
-from lakehouse.catalog import connect_lake
+from lakehouse.catalog import connect_lake, transaction
 from lakehouse.sources import ROOT, SAMPLE_END, SAMPLE_START
 
 
@@ -22,7 +22,8 @@ def main():
             from reporting.sprint3 import publish_report
 
             with connect_lake(args.lake_dir.resolve(), read_only=True) as connection:
-                report = publish_report(connection, args.output_dir.resolve(), SAMPLE_START, SAMPLE_END)
+                with transaction(connection):
+                    report = publish_report(connection, args.output_dir.resolve(), SAMPLE_START, SAMPLE_END)
     except (duckdb.Error, OSError, ValueError) as error:
         parser.exit(1, f"Sprint 3 report failed: {error}\n")
     print(f"Report ready at {report}")

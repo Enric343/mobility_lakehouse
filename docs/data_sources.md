@@ -23,7 +23,7 @@ Source: <https://movilidad-opendata.mitma.es/>
 | Data | File (in `ine/`) | What for |
 |---|---|---|
 | Population and demographics ([30832](https://www.ine.es/jaxiT3/Tabla.htm?t=30832)) | `adrh/indicadores_demograficos_30832.csv` | BQ2: population of the origin (`P_i`). Also mean age and % aged 65+ |
-| Income ([30824](https://www.ine.es/jaxiT3/Tabla.htm?t=30824)) | `adrh/renta_media_mediana_30824.csv` | BQ2: rank the worst-served zones by income |
+| Income ([30824](https://www.ine.es/jaxiT3/Tabla.htm?t=30824)) | `adrh/renta_media_mediana_30824.csv` | Silver context for interpreting BQ2 zones |
 | Income sources ([30825](https://www.ine.es/jaxiT3/Tabla.htm?t=30825)) | `adrh/renta_fuentes_ingreso_30825.csv` | Describe each zone: % of income from wages, pensions and unemployment benefits |
 | Inequality ([37677](https://www.ine.es/jaxiT3/Tabla.htm?t=37677)) | `adrh/renta_gini_p80p20_37677.csv` | Describe each zone: Gini index |
 | Businesses ([4721](https://www.ine.es/jaxiT3/Tabla.htm?t=4721)) | `dirce/empresas_municipio_4721.csv` | BQ2: economic activity of the destination (`E_j`) |
@@ -37,9 +37,9 @@ Source: <https://movilidad-opendata.mitma.es/>
 
 ## How to get the data
 
-**MITMA, BOE and INE tables.** Run `python scripts/download_data.py [start] [end]` from the repository root. It defaults to the sample week, 2023-03-06 to 2023-03-12. The full reference year takes about 130 GB (estimated from the sample week). Download it with `python scripts/download_data.py 2023-01-01 2023-12-31`.
+**MITMA, BOE and INE tables.** Run `python scripts/download_data.py [start] [end]` from the repository root. It defaults to the sample week, 2023-03-06 to 2023-03-12. A reference year of daily archives takes roughly 130 GiB at the sample's rate, before DuckLake storage. Download it with `python scripts/download_data.py 2023-01-01 2023-12-31 --allow-missing-days`.
 
-MITMA has no files for 7 days of 2023: 26, 27, 30 and 31 October and 1, 2 and 3 November. The script reports them as `MISSING` and carries on.
+The documented gaps in MITMA's 2023 coverage are 26, 27, 30 and 31 October and 1, 2 and 3 November. With `--allow-missing-days`, the downloader reports daily HTTP 404 and 410 responses as `MISSING` and continues. Other errors and missing required reference files fail the task. The column dictionary is an optional reference.
 
 The INE tables come with all their years. Silver filters to 2023, and the other years help explain the nulls.
 

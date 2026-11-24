@@ -8,7 +8,7 @@ Observed and estimated weekly trips for eligible directed municipality pairs.
 | Inputs | [`silver_fact_trips`](silver_fact_trips.md), [`silver_zone_metrics`](silver_zone_metrics.md), [`silver_dim_zone`](silver_dim_zone.md) |
 | Transformation | • Build eligible pairs with positive origin population, destination businesses and centroid distance.<br>• Estimate trips with the gravity formula; sum published trips as `actual_trips`.<br>• Leave `actual_trips` and the ratio null where no flow is published.<br>[Pair results SQL](../../sql/silver_to_gold/infrastructure_gaps.sql) |
 | Storage | Parquet partitioned by (`period_start`, `period_end`). |
-| Validation | Validates eligible pairs, positive estimates, unpublished-flow handling and calibrated comparable trip totals. [Gold validation](../../sql/validation/gold.sql) |
+| Validation | Checks unique directed pairs, positive distances and estimates, unpublished-flow handling and calibrated comparable trip totals. [Gold validation](../../sql/validation/gold.sql) |
 | Used by | [`gold_gravity_zone_ranking`](gold_gravity_zone_ranking.md) |
 
 ## Columns
@@ -23,7 +23,7 @@ Directed municipality pairs. Eligible pairs with no published flow keep `actual_
 | `origin_population` | DOUBLE | `silver_zone_metrics.population` at the origin |
 | `destination_businesses` | INTEGER | `silver_zone_metrics.businesses_total` at the destination |
 | `distance_km` | DOUBLE | Great-circle distance between centroids |
-| `actual_trips` | DOUBLE | Sum of published trips over the window |
+| `actual_trips` | DOUBLE | Sum over the days with published trips for this pair |
 | `estimated_trips` | DOUBLE | `k × population × businesses / distance_km²` |
 | `actual_to_estimated_ratio` | DOUBLE | Actual / estimated when both exist and the estimate is positive |
 

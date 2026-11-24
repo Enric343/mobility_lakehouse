@@ -1,7 +1,7 @@
 """Download the mobility window and the reference inputs into data/raw."""
 
+import argparse
 import shutil
-import sys
 import urllib.error
 import urllib.request
 from datetime import date
@@ -19,7 +19,7 @@ MITMA = "https://movilidad-opendata.mitma.es/"
 INE = "https://www.ine.es/jaxiT3/files/t/es/csv_bdsc/"
 
 
-def get(path, url=None, *, province_table=False):
+def get(path, url=None, *, province_table=False, allow_missing=False):
     dest = RAW / ("mitma/" + path if url is None else path)
     if dest.exists():
         return
@@ -41,20 +41,19 @@ def get(path, url=None, *, province_table=False):
                 write_ine_provinces(html, output)
         temporary.replace(dest)
         print("ok", dest.relative_to(RAW))
-    except urllib.error.HTTPError as e:
-        print("MISSING", dest.relative_to(RAW), e.code)
+    except urllib.error.HTTPError as error:
+        if not allow_missing or error.code not in (404, 410):
+            raise OSError(f"HTTP {error.code} downloading {dest.relative_to(RAW)}") from error
+        print("MISSING", dest.relative_to(RAW), error.code)
     finally:
         if temporary is not None:
             temporary.unlink(missing_ok=True)
 
 
-def main():
-    start = date.fromisoformat(sys.argv[1]) if len(sys.argv) > 1 else SAMPLE_START
-    end = date.fromisoformat(sys.argv[2]) if len(sys.argv) > 2 else SAMPLE_END
-
+def download_inputs(start, end, *, allow_missing_days):
     # Zoning, INE <-> MITMA relation and documentation
     get(ZONE_MAPPING)
-    get("LEEME_Especificaciones_indicadores_OpenDataMovilidad.xlsx")
+    get("LEEME_Especificaciones_indicadores_OpenDataMovilidad.xlsx", allow_missing=True)
     for level in ZONE_NAMES:
         get(zone_names_path(level))
         for ext in SHAPE_EXTENSIONS:
@@ -74,7 +73,23 @@ def main():
     for day in days_inclusive(start, end):
         for level in ZONE_NAMES:
             for dataset in DAILY_DATASETS:
-                get(daily_mitma_path(day, level, dataset))
+                get(daily_mitma_path(day, level, dataset), allow_missing=allow_missing_days)
+
+
+def main():
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("start", nargs="?", type=date.fromisoformat)
+    parser.add_argument("end", nargs="?", type=date.fromisoformat, help="Inclusive end date")
+    parser.add_argument("--allow-missing-days", action="store_true", help="Continue when a daily file returns HTTP 404 or 410")
+    args = parser.parse_args()
+    start = args.start or SAMPLE_START
+    end = args.end or args.start or SAMPLE_END
+    if end < start:
+        parser.error("end must be on or after start")
+    try:
+        download_inputs(start, end, allow_missing_days=args.allow_missing_days)
+    except (OSError, ValueError) as error:
+        parser.exit(1, f"Download failed: {error}\n")
 
 
 if __name__ == "__main__":

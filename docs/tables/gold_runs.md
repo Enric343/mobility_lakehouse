@@ -9,7 +9,7 @@ Completion record for each validated Gold window.
 | Transformation | Records the model revision and completion timestamp in the transaction that publishes Gold. [Gold builder](../../scripts/lakehouse/gold.py) |
 | Storage | Unpartitioned Parquet in DuckLake. |
 | Validation | Written only after all Gold checks pass. [Gold validation](../../sql/validation/gold.sql) |
-| Used by | Gold reuses the validated window for the same model revision. |
+| Used by | Gold rechecks a completed window before reuse for the same model revision. The report requires one completion record for its window. |
 
 ## Columns
 

@@ -5,8 +5,9 @@ is built, see the [lakehouse map](lakehouse.md) and the [Bronze to Silver guide]
 
 ## Run Sprint 3
 
-Use Linux or Ubuntu in WSL2 with Python 3.12 and `venv` for Airflow. Run these
-commands from the repository root inside that environment.
+Use Linux or Ubuntu in WSL2 with Python 3.12 and `venv` for Airflow. On Ubuntu,
+install the matching `python3.12-venv` package if `venv` cannot bootstrap pip.
+Run these commands from the repository root inside that environment.
 
 ```bash
 python3 -m venv .venv/airflow
@@ -25,7 +26,8 @@ The DAG downloads inputs, loads Bronze and Silver, builds and validates Gold,
 and publishes the report. It uses the existing sample week
 (6–12 March 2023). The Airflow argument is the logical run date. The DAG is manual
 and allows one active run for the local catalog. The source and Gold load records
-let repeated runs reuse validated data. The Airflow database and logs stay under
+let repeated runs reuse data. Gold checks run on both fresh and reused outputs.
+The Airflow database and logs stay under
 `AIRFLOW_HOME`. [Airflow installation and Windows support](https://airflow.apache.org/docs/apache-airflow/3.2.1/installation/prerequisites.html)
 
 For direct execution against the existing Silver data, run these commands in a
@@ -54,10 +56,12 @@ python scripts/run_sprint2.py
 
 The default window is 2023-03-06 through 2023-03-12 at district, municipality
 and GAU levels. Downloads are cached under `data/raw/`. The catalog and Parquet
-files are stored in `data/lakehouse/`. Both commands accept inclusive dates.
-For a smaller development run, pass one date to `scripts/run_sprint2.py`.
-Pass `--allow-missing-days` to list missing mobility files and continue loading
-available ones. Use `--lake-dir` to create a separate local catalog.
+files are stored in `data/lakehouse/`. Both commands accept inclusive dates
+and treat a single date as a one-day window. Required download failures stop
+the run. For ranges with gaps documented by MITMA, pass `--allow-missing-days`
+to both commands to continue past daily HTTP 404/410 responses and load the
+available files. Use `--lake-dir` on the load command to create a separate
+local catalog.
 
 ## Query the local lakehouse
 

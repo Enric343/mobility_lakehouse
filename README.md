@@ -3,9 +3,9 @@
 A 3-tier data lakehouse (Bronze → Silver → Gold) for mobility analysis in Spain,
 built on **DuckLake** for ACID storage and versioning and **DuckDB** for SQL
 analytics. It integrates MITMA mobility, INE demographics and economics, and BOE
-holidays. The working sample covers **6–12 March 2023**; the design scales to the
-full 2023 reference year. Airflow runs the load and publishes Gold analyses of
-the typical mobility day and gravity-model infrastructure gaps.
+holidays. Airflow loads **6–12 March 2023** and publishes Gold analyses of the
+typical mobility day and gravity-model infrastructure gaps. Bronze and Silver
+also accept incremental loads for other date ranges.
 
 ## Documentation
 

@@ -39,10 +39,13 @@ prediction and an unknown actual value. Calibration and ratios use observations.
 
 The origin ranking divides total observed trips by total estimated trips over
 the same observed pairs. This weights each pair through the gravity estimate.
-Pair coverage is the share of eligible destinations with a published flow. The
-map shows the ratio and the scatter shows how it varies with coverage. A low
-ratio identifies a gap relative to the model for this week. Additional evidence
-would be needed to attribute it to transport infrastructure.
+Pair coverage is the share of eligible destinations with a published flow. It
+is 9.4% at the median ranked origin. A pair's actual volume sums the days with
+a published value. Of the 734,366 observed pairs, 338,493 (46.1%) appear on one
+day and 123,594 (16.8%) appear on all seven. The maps and ratios are exploratory
+because censoring, business counts and centroid distances can all influence
+the ranking. Attributing a gap to transport infrastructure needs independent
+evidence.
 
 ## Follow the work in the repository
 

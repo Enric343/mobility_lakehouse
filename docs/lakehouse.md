@@ -26,6 +26,12 @@ and calendar year, month and day. Silver overnight stays split by zone level
 and date. Gold OD averages split by reporting window, level and pattern basis.
 The gravity pair table splits by reporting window. [Bronze and Silver partition definitions](../sql/schema/ducklake.sql) · [Gold table definitions](../sql/schema/gold.sql)
 
+The sample uses 2.72 GB of daily source archives and 5.61 GB of Parquet
+including reference data and Gold. Bronze and Silver load by day and zoning
+level, so a longer load can resume after a failed file. Gold is verified for one
+week. Its gravity candidate count grows with the product of eligible origins
+and destinations, while its OD tables store each window and pattern basis.
+
 ## Schema overview
 
 Each source lands in one Bronze table, is cleaned and typed into Silver, and is
@@ -48,7 +54,7 @@ flowchart LR
     F1 --> G2[gold_infrastructure_gaps]
     D1 --> G2
     F3 --> G2
-    F2 --> G3[gold_overnight_presence]
+    F2 -.-> G3["gold_overnight_presence (Sprint 1 prototype)"]
 ```
 
 Silver is a star schema. Facts point to `silver_dim_zone` by the pair
@@ -110,7 +116,7 @@ erDiagram
     silver_dim_ccaa ||--o{ silver_dim_province : "ccaa_code"
     silver_dim_ccaa ||--o{ silver_holidays : "ccaa_code"
     silver_dim_zone ||--o{ silver_fact_trips : "origin / destination"
-    silver_dim_zone ||--o{ silver_fact_overnight : "residence / overnight"
+    silver_dim_zone ||--o{ silver_fact_overnight : "district residence / overnight at fact level"
     silver_dim_zone ||--o| silver_zone_metrics : "zone"
 ```
 
@@ -145,9 +151,9 @@ municipal or GAU overnight destination. [Silver fact relationships](bronze-to-si
 |---|---|---|
 | Reference snapshot | The seven Bronze reference tables, five Silver reference tables, and the 2023 completion record. | `reference_load` tracks the catalog's reference year. |
 | Daily mobility file | The staged Bronze rows, the validated Silver fact rows, and one load record. | `mobility_loads` identifies the dataset, zoning level and observation date. |
-| Gold week | Seven validated analytical tables for the window and the Gold completion record. | `gold_runs` identifies the window and model revision. |
+| Gold week | Seven validated analytical tables for the window and the Gold completion record. | `gold_runs` identifies the window and model revision. Existing results pass the Gold checks again before reuse. |
 
-The report opens DuckLake read-only and publishes HTML and figures after Gold.
+The report reads a single validated DuckLake snapshot and publishes HTML and figures.
 Reusable code paths are linked from the [transformation guide](bronze-to-silver.md)
 and the [Gold analysis guide](sprint3.md).
 
@@ -162,9 +168,10 @@ The choices that shape the model. Larger ones have an [ADR](decisions/).
 5. **Reference year 2023**: INE tables are filtered to `Periodo = 2023` entering Silver. Bronze keeps all years, so others can be added later.
 6. **INE reaches MITMA through census sections**, not municipality codes: a direct code join loses about 11% of the population, and only sections map to all three levels. [Mapping rules](bronze-to-silver.md#population-income-and-businesses-by-zone)
 7. **BQ2 at municipality level**, because business counts (`E_j`) are only published per municipality; GAU is added by aggregation.
-8. **Distances are not stored in Silver**: computed on demand from centroids (only BQ2 uses them; all municipality pairs take under a second). Great-circle distance; same-zone pairs excluded.
+8. **Distances are computed in Gold**: BQ2 uses great-circle distances between centroids and excludes same-zone pairs.
 9. **Design keys checked with queries**: DuckLake does not enforce PK/FK, so duplicate and orphan checks run before each commit.
 10. **Daily partitions committed per (`dataset`, `zone_level`, `observation_date`)** with a load record, so retries skip completed work. [ADR 002](decisions/002-local-ducklake-batches.md)
+11. **Categorical and code columns stay `VARCHAR`**: DuckLake rejects `ENUM` and ignores `VARCHAR(n)` length, Parquet already dictionary-encodes low-cardinality strings, and codes keep leading zeros. [ADR 004](decisions/004-silver-column-types.md)
 
 ## Inspect the lakehouse
 

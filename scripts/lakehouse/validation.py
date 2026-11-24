@@ -9,7 +9,9 @@ class QualityError(ValueError):
 
 def require_checks(connection, path):
     results = connection.execute(read_sql(f"validation/{path}")).fetchall()
+    if not results:
+        raise QualityError(f"No checks returned by sql/validation/{path}")
     for name, issues in results:
-        print(f"{'FAIL' if issues else 'PASS'} {name} ({issues} issues)", flush=True)
-    if any(issues for _, issues in results):
+        print(f"{'PASS' if issues == 0 else 'FAIL'} {name} ({issues} issues)", flush=True)
+    if any(issues != 0 for _, issues in results):
         raise QualityError(f"Checks failed in sql/validation/{path}")

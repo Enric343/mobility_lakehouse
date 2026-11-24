@@ -94,6 +94,26 @@ The fitted gravity coefficient was approximately 0.0119085. Of the 2,563
 ranked origins, 194 had fewer observed trips than estimated for the pairs with
 a published flow. Pair coverage is included alongside each ratio. [Analysis guide](sprint3.md)
 
+### Closure review · 24 November 2026
+
+- Reran the DAG with Airflow 3.2.1 on Ubuntu WSL2. All four tasks succeeded
+  using the cached inputs and the existing lakehouse. Gold passed all ten
+  checks and the offline report regenerated with four embedded figures.
+- Read the stored Bronze and Silver facts and reconciled row counts and
+  published totals to all 42 mobility load records.
+- Loaded the 2023 references and the six 6 March daily partitions into an empty
+  test catalog. A retry for 6 March skipped all six loads.
+- Rebuilt Gold from the complete week's Silver data in a separate catalog.
+  All ten checks passed and the report published from the rebuilt snapshot.
+- Checked that required HTTP errors fail the download and that invalid daily
+  totals, duplicate gravity pairs, missing calibration values and invalid
+  completion records are rejected.
+
+The Sprint 3 results cover the original sample week. They demonstrate the ELT
+and the two Gold analyses. The reference-year mobility load, the original
+overnight analysis and the summary article are still pending for the full
+project.
+
 ## Next · Sprint 4
 
 - Move the validated DAG tasks to AWS Batch and review the resulting cloud run.

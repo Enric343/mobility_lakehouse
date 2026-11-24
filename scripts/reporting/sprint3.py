@@ -51,6 +51,12 @@ def _rank_table(rows):
 def publish_report(connection, output, start, end):
     connection.execute("SET VARIABLE gold_start = ?", [start])
     connection.execute("SET VARIABLE gold_end = ?", [end])
+    completed_runs = connection.execute("""
+        SELECT count(*), count(model_revision)
+        FROM lake.main.gold_runs WHERE period_start = ? AND period_end = ?
+    """, [start, end]).fetchone()
+    if completed_runs != (1, 1):
+        raise QualityError("Report requires one validated Gold run for the sample. Run scripts/build_gold.py first.")
     connection.execute(read_sql("reporting/sprint3.sql"))
     daily = connection.sql("""
         SELECT date, day_type, cluster_id, total_trips, peak_hour FROM report_days
@@ -111,7 +117,10 @@ def publish_report(connection, output, start, end):
       {_rank_table(ranking[:10])}
       <h3>Ten highest ratios</h3>
       {_rank_table(reversed(ranking[-10:]))}
-      <p class="note">Rankings compare actual and estimated demand on the same published pairs. Missing flows stay unknown. Low coverage limits the evidence for an origin. The gap is a model diagnostic for this sample week and does not establish the cause of the difference.</p>
+      <p class="note">Rankings compare actual and estimated demand on the same published pairs.
+      Actual trips sum the published observations, which can cover fewer than seven days for a pair.
+      Pair coverage measures destinations, and the model can reflect gaps in publication as well as mobility.
+      Use these results to identify where to investigate further.</p>
     </section>
     """
     document = f"""<!doctype html><html lang="en"><head><meta charset="utf-8">

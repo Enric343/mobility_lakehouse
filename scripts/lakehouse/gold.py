@@ -64,22 +64,23 @@ def _gravity_model(connection):
 
 def build_gold(connection, start, end, *, rebuild=False):
     dates = list(days_inclusive(start, end))
-    loaded = connection.execute("""
-        SELECT zone_level, observation_date FROM lake.main.mobility_loads
-        WHERE dataset = 'viajes' AND observation_date BETWEEN ? AND ?
-    """, [start, end]).fetchall()
     expected = {(level, day) for level in ZONE_NAMES for day in dates}
-    if len(loaded) != len(expected) or set(loaded) != expected:
-        raise QualityError("Gold requires exactly one Silver trip load for every sample day and zoning level")
-
     connection.execute("SET VARIABLE gold_start = ?", [start])
     connection.execute("SET VARIABLE gold_end = ?", [end])
     with transaction(connection):
+        loaded = connection.execute("""
+            SELECT zone_level, observation_date FROM lake.main.mobility_loads
+            WHERE dataset = 'viajes' AND observation_date BETWEEN ? AND ?
+        """, [start, end]).fetchall()
+        if len(loaded) != len(expected) or set(loaded) != expected:
+            raise QualityError("Gold requires exactly one Silver trip load for every sample day and zoning level")
+
         connection.execute(read_sql("schema/gold.sql"))
         previous = connection.execute("""
             SELECT model_revision FROM lake.main.gold_runs WHERE period_start = ? AND period_end = ?
         """, [start, end]).fetchall()
         if previous == [(MODEL_REVISION,)] and not rebuild:
+            require_checks(connection, "gold.sql")
             print(f"Validated Gold already published for {start} through {end}", flush=True)
             return
 
